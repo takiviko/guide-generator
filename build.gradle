@@ -1,5 +1,19 @@
 plugins {
     id 'java'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+publishing {
+    repositories {
+        maven {
+            url = "$buildDir/repo"
+        }
+    }
+}
+
+tasks.withType(Copy).all {
+    duplicatesStrategy 'exclude'
 }
 
 group 'takiviko'
@@ -9,11 +23,37 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    lombokVersion = '1.18.24'
+    reflectionsVersion = '0.10.2'
+    markdown2PdfVersion = '2.0.1'
+    jUnitVersion = '5.9.0'
+}
+
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.reflections:reflections:${reflectionsVersion}"
+    implementation "eu.de-swaef.pdf:Markdown2Pdf:${markdown2PdfVersion}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    implementation gradleApi()
 }
 
 test {
     useJUnitPlatform()
+}
+
+gradlePlugin {
+    plugins {
+        guide {
+            id = "guide-generator"
+            implementationClass = "takiviko.gradle.plugins.guidegenerator.GuideGeneratorPlugin"
+            displayName = "Guide generator plugin"
+        }
+    }
 }
