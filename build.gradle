@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '1.0.0-rc-1'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 publishing {
@@ -16,8 +18,8 @@ tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
 }
 
-group 'takiviko'
-version '1.0-SNAPSHOT'
+group 'takiviko.guide-generator'
+version '0.0.1'
 
 repositories {
     mavenCentral()
@@ -26,15 +28,17 @@ repositories {
 ext {
     lombokVersion = '1.18.24'
     reflectionsVersion = '0.10.2'
-    markdown2PdfVersion = '2.0.1'
+    flexMarkVersion = '0.64.0'
     jUnitVersion = '5.9.0'
+    jacksonVersion = '2.13.4.2'
 }
 
 dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
-    implementation "eu.de-swaef.pdf:Markdown2Pdf:${markdown2PdfVersion}"
+    implementation "com.vladsch.flexmark:flexmark-pdf-converter:${flexMarkVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
@@ -48,12 +52,34 @@ test {
     useJUnitPlatform()
 }
 
+shadowJar {
+    archiveBaseName.set('guide-generator-shadowed')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+pluginBundle {
+    website = 'https://github.com/takiviko/guide-generator/tree/test'
+    vcsUrl = 'https://github.com/takiviko/guide-generator/tree/test'
+    tags = [
+            'test',
+            'guide',
+            'documentation',
+            'pdf',
+            'markdown',
+            'plugin',
+            'util',
+            'generate'
+    ]
+}
+
 gradlePlugin {
     plugins {
         guide {
-            id = "guide-generator"
+            id = "takiviko.guide-generator"
             implementationClass = "takiviko.gradle.plugins.guidegenerator.GuideGeneratorPlugin"
             displayName = "Guide generator plugin"
+            description = "Generates user docs from annotations"
         }
     }
 }
