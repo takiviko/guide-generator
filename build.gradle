@@ -19,7 +19,7 @@ tasks.withType(Copy).all {
 }
 
 group 'takiviko.guide-generator'
-version '0.0.1'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -30,7 +30,6 @@ ext {
     reflectionsVersion = '0.10.2'
     flexMarkVersion = '0.64.0'
     jUnitVersion = '5.9.0'
-    jacksonVersion = '2.13.4.2'
 }
 
 dependencies {
@@ -38,7 +37,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "com.vladsch.flexmark:flexmark-pdf-converter:${flexMarkVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
