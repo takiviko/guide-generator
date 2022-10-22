@@ -13,10 +13,12 @@ Currently, the plugin is still in development, and it is yet not published to th
 *build.gradle*
 
 ```
+import takiviko.guidegenerator.plugin.GuideGeneratorPlugin
+
 buildscript {
     dependencies {
         //...
-        PATH_TO_PLUGIN_JAR
+        classpath files('PATH_TO_PLUGIN_JAR')
     }
 }
 
