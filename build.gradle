@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath("io.github.takiviko.guide-generator:guide-generator:1.0.0")
+    }
+}
+
 plugins {
     id 'java'
     id 'java-gradle-plugin'
@@ -5,15 +11,15 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
     id 'signing'
+    id 'io.github.takiviko.guide-generator' version '1.0.0'
 }
 
-group 'io.github.takiviko.guide-generator'
+group 'io.github.takiviko'
 version '1.0.0'
 
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
 }
-
 
 repositories {
     mavenCentral()
@@ -31,6 +37,8 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "com.vladsch.flexmark:flexmark-pdf-converter:${flexMarkVersion}"
+    implementation 'io.github.takiviko.guide-generator:guide-generator:1.0.0'
+
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
@@ -109,4 +117,8 @@ publishing {
             }
         }
     }
+}
+
+guideGenerator {
+    setBasePackage('takiviko.guidegenerator')
 }

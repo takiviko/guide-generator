@@ -24,7 +24,7 @@ buildscript {
 
 plugins {
     // ...
-    id "io.github.takiviko.guide-generator" version 1.0.0
+    id 'io.github.takiviko.guide-generator' version '1.0.0'
 }
 
 dependencies {
