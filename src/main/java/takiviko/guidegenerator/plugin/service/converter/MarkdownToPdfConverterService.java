@@ -1,9 +1,4 @@
-package takiviko.guidegenerator.service.converter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
+package takiviko.guidegenerator.plugin.service.converter;
 
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -12,9 +7,13 @@ import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.ast.Node;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
 @Slf4j
 public class MarkdownToPdfConverterService {
-
     public static MarkdownToPdfConverterService newService() {
         return new MarkdownToPdfConverterService();
     }
@@ -23,7 +22,7 @@ public class MarkdownToPdfConverterService {
         String buildPath,
         List<String> markdownStrings
     ) {
-        var markdownString = String.join("\n", markdownStrings);
+        String markdownString = String.join("\n", markdownStrings);
 
         log.info("Started converting markdown string");
 

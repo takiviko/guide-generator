@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +14,8 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.internal.classloader.VisitableURLClassLoader;
-import takiviko.guidegenerator.service.GuideGeneratorService;
-import takiviko.guidegenerator.service.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.service.GuideGeneratorService;
+import takiviko.guidegenerator.plugin.service.converter.MarkdownToPdfConverterService;
 
 /**
  * Implementation class for the Guide Generator plugin.
@@ -38,19 +39,19 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
 
         project.task("generateGuide")
             .dependsOn(project.getTasks().getByName("compileJava"))
-            .doLast(task -> generateGuide(project, guideGeneratorPluginExtension.getBasePackage()));
+            .doLast(task -> generateGuide(project, guideGeneratorPluginExtension));
     }
 
-    private void generateGuide(Project project, String basePackage) {
+    private void generateGuide(Project project, GuideGeneratorPluginExtension extension) {
         URL[] urls = getProjectFileUrls(project);
 
         ClassLoader classLoader = new URLClassLoader(
-            "myUrlClassLoader",
+            "guideGeneratorClassLoader",
             urls,
             VisitableURLClassLoader.getSystemClassLoader()
         );
 
-         var markdownStrings = guideGeneratorService.getMarkdownStrings(basePackage, classLoader);
+        List<String> markdownStrings = guideGeneratorService.getMarkdownStrings(extension.getBasePackage(), classLoader);
          markdownToPdfConverterService.assemble(project.getBuildDir().getPath(), markdownStrings);
     }
 
@@ -58,20 +59,24 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
         SourceSetContainer sourceSetContainer =
             project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 
+        // Target project's files
         Set<File> sourceFiles = sourceSetContainer
             .getByName("main")
             .getOutput()
             .getClassesDirs()
             .getFiles();
 
+        // This project's files
+        // Needed for using @Documentation type
         Set<File> runtimeFiles = project.getConfigurations()
             .getByName("runtimeClasspath")
+            .filter(file -> file.getPath().contains("io.github.takiviko.guide-generator"))
             .getFiles();
 
-        runtimeFiles.addAll(sourceFiles);
-        runtimeFiles.add(project.getProjectDir());
+        sourceFiles.addAll(runtimeFiles);
+        sourceFiles.add(project.getProjectDir());
 
-        return getFileURLs(runtimeFiles);
+        return getFileURLs(sourceFiles);
     }
 
     private URL[] getFileURLs(Set<File> files) {
