@@ -1,4 +1,10 @@
-package takiviko.guidegenerator.service;
+package takiviko.guidegenerator.plugin.service;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import takiviko.guidegenerator.annotation.Documentation;
+import takiviko.guidegenerator.annotation.DocumentationEntity;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -6,12 +12,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ClasspathHelper;
-import takiviko.guidegenerator.annotation.Documentation;
-import takiviko.guidegenerator.annotation.DocumentationEntity;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Service for indexing and extracting documentation from a target project.
@@ -41,35 +43,33 @@ public class GuideGeneratorService {
             ClasspathHelper.forPackage(Documentation.class.getPackageName(), classLoader)
         );
 
-        var classNames = reflections.getAll(Scanners.TypesAnnotated);
+        Set<String> classNames = reflections.getAll(Scanners.TypesAnnotated);
 
-        var classes = classNames.stream()
+        List<? extends Class<?>> classes = classNames.stream()
             .map(className -> reflections.forClass(className, classLoader))
             .filter(Objects::nonNull)
             .toList();
 
-        var documentationClass = classes.stream()
-            .filter(Class::isAnnotation)
-            .filter(aClass -> aClass.getPackageName().equals(Documentation.class.getPackageName()))
-            .filter(aClass -> aClass.getName().equals(Documentation.class.getName()))
-            .findFirst()
-            .orElseThrow();
+        Annotation internalAnnotationType = getInternalAnnotation(classes);
 
-        Annotation internalAnnotationType = classes.stream()
+        Stream<? extends Annotation> annotations = classes.stream()
+            .filter(aClass -> aClass.getPackageName().startsWith(basePackage))
+            .map(aClass -> aClass.getAnnotation(internalAnnotationType.annotationType()))
+            .filter(Objects::nonNull);
+
+        return annotations
+            .map(annotation -> getDocumentation(internalAnnotationType.getClass(), annotation))
+            .sorted(Comparator.comparingInt(DocumentationEntity::getOrder))
+            .map(DocumentationEntity::getDocumentation)
+            .toList();
+    }
+
+    private Annotation getInternalAnnotation(List<? extends Class<?>> classes) {
+        return classes.stream()
             .flatMap(aClass -> Arrays.stream(aClass.getAnnotations()))
             .filter(annotation -> annotation.annotationType().getName().equals(Documentation.class.getName()))
             .findFirst()
             .orElseThrow();
-
-        return classes.stream()
-            .filter(aClass -> aClass.getPackageName().startsWith(basePackage))
-            .sorted(Comparator.comparing(Class::getPackageName))
-            .map(aClass -> aClass.getAnnotation(internalAnnotationType.annotationType()))
-            .filter(Objects::nonNull)
-            .map(annotation -> getDocumentation(documentationClass, annotation))
-            .sorted(Comparator.comparingInt(DocumentationEntity::getOrder))
-            .map(DocumentationEntity::getDocumentation)
-            .toList();
     }
 
     private DocumentationEntity getDocumentation(Class<?> documentationClass, Annotation annotation) {
