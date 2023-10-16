@@ -15,7 +15,7 @@ public @interface Documentation {
         String documentation();
 
         /**
-         * The order of the specific section of documentation.
+         * The order of the specific section of documentation in the final document.
          * <p>
          * It should only be used if the intent of the order is to place items
          * in the very beginning or end of the document as the ordering may be

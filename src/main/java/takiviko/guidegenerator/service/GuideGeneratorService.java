@@ -13,12 +13,27 @@ import org.reflections.util.ClasspathHelper;
 import takiviko.guidegenerator.annotation.Documentation;
 import takiviko.guidegenerator.annotation.DocumentationEntity;
 
+/**
+ * Service for indexing and extracting documentation from a target project.
+ */
 public class GuideGeneratorService {
 
+    /**
+     * Constructs a new instance of the service.
+     *
+     * @return the new {@link GuideGeneratorService} instance
+     */
     public static GuideGeneratorService newService() {
         return new GuideGeneratorService();
     }
 
+    /**
+     * Fetches all documentation in the target project accessible by the classloader.
+     *
+     * @param basePackage root package of the target project
+     * @param classLoader class loader having access to the target project
+     * @return list of all markdown documentation in the target project inside {@link Documentation} annotations
+     */
     public List<String> getMarkdownStrings(String basePackage, ClassLoader classLoader) {
 
         Reflections reflections = new Reflections(

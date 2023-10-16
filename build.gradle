@@ -1,25 +1,25 @@
+buildscript {
+    dependencies {
+        classpath("io.github.takiviko.guide-generator:guide-generator:1.0.0")
+    }
+}
+
 plugins {
     id 'java'
     id 'java-gradle-plugin'
-    id 'maven-publish'
     id 'com.gradle.plugin-publish' version '1.2.0'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.github.takiviko.guide-generator' version '1.0.0'
 }
 
-publishing {
-    repositories {
-        maven {
-            url = "$buildDir/repo"
-        }
-    }
-}
+group 'io.github.takiviko'
+version '1.0.0'
 
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
 }
-
-group 'io.github.takiviko.guide-generator'
-version '1.0.0-002'
 
 repositories {
     mavenCentral()
@@ -37,6 +37,8 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "com.vladsch.flexmark:flexmark-pdf-converter:${flexMarkVersion}"
+    implementation 'io.github.takiviko.guide-generator:guide-generator:1.0.0'
+
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
@@ -68,4 +70,55 @@ gradlePlugin {
             tags.set(['test', 'guide', 'documentation', 'pdf', 'markdown', 'util', 'generate'])
         }
     }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'io.github.takiviko'
+            artifactId = 'guide-generator'
+            from components.java
+
+            pom {
+                name = 'Guide generator'
+                description = 'Java tool for keeping documentation right next to the codebase.'
+
+                signing {
+                    useGpgCmd()
+                    sign publishing.publications.maven
+                    sign shadowJar
+                }
+
+
+                license {
+                    name = 'Apache 2.0'
+                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+
+                developers {
+                    developer {
+                        id = 'takiviko'
+                        name = 'Viktor Takacs'
+                    }
+                }
+
+                scm {
+                    url = 'https://github.com/takiviko/guide-generator'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = project.findProperty("ossrhUrl")
+            credentials {
+                username = project.findProperty("ossrhUsername")
+                password = project.findProperty("ossrhPassword")
+            }
+        }
+    }
+}
+
+guideGenerator {
+    setBasePackage('takiviko.guidegenerator')
 }

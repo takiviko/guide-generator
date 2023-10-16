@@ -16,12 +16,20 @@ import org.gradle.internal.classloader.VisitableURLClassLoader;
 import takiviko.guidegenerator.service.GuideGeneratorService;
 import takiviko.guidegenerator.service.converter.MarkdownToPdfConverterService;
 
+/**
+ * Implementation class for the Guide Generator plugin.
+ */
 @Slf4j
 public class GuideGeneratorPlugin implements Plugin<Project> {
 
     private final GuideGeneratorService guideGeneratorService = GuideGeneratorService.newService();
     private final MarkdownToPdfConverterService markdownToPdfConverterService = MarkdownToPdfConverterService.newService();
 
+    /**
+     * Entry point of the Guide Generator plugin.
+     *
+     * @param project the target project
+     */
     @Override
     public void apply(Project project) {
 
