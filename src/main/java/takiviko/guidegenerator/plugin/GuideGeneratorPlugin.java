@@ -14,16 +14,17 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.internal.classloader.VisitableURLClassLoader;
-import takiviko.guidegenerator.plugin.service.GuideGeneratorService;
-import takiviko.guidegenerator.plugin.service.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension;
 
 /**
  * Implementation class for the Guide Generator plugin.
  */
 @Slf4j
+@SuppressWarnings("unused")
 public class GuideGeneratorPlugin implements Plugin<Project> {
 
-    private final GuideGeneratorService guideGeneratorService = GuideGeneratorService.newService();
+    private final GuideGeneratorService guideGeneratorService = new GuideGeneratorService();
     private final MarkdownToPdfConverterService markdownToPdfConverterService = MarkdownToPdfConverterService.newService();
 
     /**
@@ -34,8 +35,8 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
 
-        GuideGeneratorPluginExtension guideGeneratorPluginExtension = project.getExtensions()
-            .create("guideGenerator", GuideGeneratorPluginExtension.class);
+        takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension guideGeneratorPluginExtension = project.getExtensions()
+            .create("guideGenerator", takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension.class);
 
         project.task("generateGuide")
             .dependsOn(project.getTasks().getByName("compileJava"))
@@ -56,6 +57,7 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
     }
 
     private URL[] getProjectFileUrls(Project project) {
+        @SuppressWarnings("deprecation")
         SourceSetContainer sourceSetContainer =
             project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 

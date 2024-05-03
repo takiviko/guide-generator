@@ -1,4 +1,4 @@
-package takiviko.guidegenerator.plugin;
+package takiviko.guidegenerator.plugin.extension;
 
 import lombok.Getter;
 import lombok.Setter;

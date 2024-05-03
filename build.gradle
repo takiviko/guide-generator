@@ -58,6 +58,10 @@ shadowJar {
     archiveVersion.set('')
 }
 
+/**
+ * Plugin configuration for the plugin portal
+ * https://plugins.gradle.org/
+ */
 gradlePlugin {
     website = 'https://github.com/takiviko/guide-generator/'
     vcsUrl = 'https://github.com/takiviko/guide-generator/'
@@ -72,6 +76,10 @@ gradlePlugin {
     }
 }
 
+/**
+ * Maven Central publishing configuration
+ * https://central.sonatype.org/
+ */
 publishing {
     publications {
         maven(MavenPublication) {
