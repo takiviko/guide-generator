@@ -5,6 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for documenting a package.
+ */
 @Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Documentation {
