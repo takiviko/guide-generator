@@ -2,6 +2,7 @@ package takiviko.guidegenerator.plugin.extension;
 
 import lombok.Getter;
 import lombok.Setter;
+import takiviko.guidegenerator.plugin.extension.style.HtmlStyle;
 
 /**
  * Extension for the guide generator plugin.
@@ -18,5 +19,7 @@ public class GuideGeneratorPluginExtension {
      * Example: <i>takiviko.guidegenerator.plugin</i>
      */
     private String basePackage;
+
+    private HtmlStyle htmlStyle;
 
 }

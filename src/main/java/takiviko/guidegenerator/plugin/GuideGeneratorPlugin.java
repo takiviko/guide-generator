@@ -53,7 +53,7 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
         );
 
         List<String> markdownStrings = guideGeneratorService.getMarkdownStrings(extension.getBasePackage(), classLoader);
-         markdownToPdfConverterService.assemble(project.getBuildDir().getPath(), markdownStrings);
+         markdownToPdfConverterService.assemble(project.getBuildDir().getPath(), markdownStrings, extension.getHtmlStyle());
     }
 
     private URL[] getProjectFileUrls(Project project) {

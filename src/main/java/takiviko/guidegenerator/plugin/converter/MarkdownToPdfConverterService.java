@@ -1,6 +1,7 @@
 package takiviko.guidegenerator.plugin.converter;
 
 import lombok.extern.slf4j.Slf4j;
+import takiviko.guidegenerator.plugin.extension.style.HtmlStyle;
 import takiviko.guidegenerator.plugin.html.CustomHtmlRenderer;
 import takiviko.guidegenerator.plugin.pdf.CustomPdfExporter;
 
@@ -24,16 +25,18 @@ public class MarkdownToPdfConverterService {
      *
      * @param buildPath       the path to the build directory
      * @param markdownStrings the markdown strings to be converted
+     * @param htmlStyle       the HTML style to be applied to the document
      */
     public void assemble(
         String buildPath,
-        List<String> markdownStrings
+        List<String> markdownStrings,
+        HtmlStyle htmlStyle
     ) {
         String markdownString = String.join("\n", markdownStrings);
 
         log.info("Started converting markdown string");
 
-        String htmlString = htmlRenderer.render(markdownString);
+        String htmlString = htmlRenderer.render(markdownString, htmlStyle);
         pdfExporter.export(htmlString, buildPath);
 
         log.info("Finished converting markdown string");
