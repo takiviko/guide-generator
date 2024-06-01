@@ -1,7 +1,6 @@
 package takiviko.guidegenerator.plugin.converter;
 
 import lombok.extern.slf4j.Slf4j;
-import takiviko.guidegenerator.plugin.extension.style.HtmlStyle;
 import takiviko.guidegenerator.plugin.html.CustomHtmlRenderer;
 import takiviko.guidegenerator.plugin.pdf.CustomPdfExporter;
 
@@ -13,8 +12,12 @@ import java.util.List;
 @Slf4j
 public class MarkdownToPdfConverterService {
 
-    private final CustomHtmlRenderer htmlRenderer = new CustomHtmlRenderer();
-    private final CustomPdfExporter pdfExporter = new CustomPdfExporter();
+    private static final String CSS_FILE_NAME = "style.css";
+    private static final String RESOURCES_PATH = "/src/main/resources/guide-generator";
+    private static final String DEFAULT_STYLE_PATH = RESOURCES_PATH + "/" + CSS_FILE_NAME;
+
+    private final CustomHtmlRenderer customHtmlRenderer = new CustomHtmlRenderer();
+    private final CustomPdfExporter customPdfExporter = new CustomPdfExporter();
 
     public static MarkdownToPdfConverterService newService() {
         return new MarkdownToPdfConverterService();
@@ -23,21 +26,16 @@ public class MarkdownToPdfConverterService {
     /**
      * Assembles the markdown strings into a PDF file.
      *
-     * @param buildPath       the path to the build directory
+     * @param buildDirPath    the build directory path
      * @param markdownStrings the markdown strings to be converted
-     * @param htmlStyle       the HTML style to be applied to the document
      */
-    public void assemble(
-        String buildPath,
-        List<String> markdownStrings,
-        HtmlStyle htmlStyle
-    ) {
+    public void assemble(String projectPath, String buildDirPath, List<String> markdownStrings) {
         String markdownString = String.join("\n", markdownStrings);
 
         log.info("Started converting markdown string");
 
-        String htmlString = htmlRenderer.render(markdownString, htmlStyle);
-        pdfExporter.export(htmlString, buildPath);
+        String htmlString = customHtmlRenderer.render(markdownString, projectPath + DEFAULT_STYLE_PATH);
+        customPdfExporter.export(htmlString, buildDirPath);
 
         log.info("Finished converting markdown string");
     }
