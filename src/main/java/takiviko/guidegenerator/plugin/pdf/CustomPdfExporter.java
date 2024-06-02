@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 @Slf4j
 @AllArgsConstructor
@@ -22,9 +21,10 @@ public class CustomPdfExporter {
      */
     public void export(String html, String buildPath) {
         try {
+            log.info("Exporting PDF to path: " + buildPath);
             FileOutputStream fileOutputStream = createFile(buildPath);
-            log.info("current path: " + Paths.get("").toAbsolutePath());
             PdfConverterExtension.exportToPdf(fileOutputStream, html, "", BaseRendererBuilder.TextDirection.LTR);
+            log.info("Successfully exported PDF to path: " + buildPath);
         } catch (IOException e) {
             log.error("Failed to export PDF", e);
         }
