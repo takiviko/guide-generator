@@ -19,6 +19,10 @@ public class MarkdownToPdfConverterService {
     private final CustomHtmlRenderer customHtmlRenderer = new CustomHtmlRenderer();
     private final CustomPdfExporter customPdfExporter = new CustomPdfExporter();
 
+    /**
+     * Creates a new markdown to PDF converter service.
+     * @return a new markdown to PDF converter service instance
+     */
     public static MarkdownToPdfConverterService newService() {
         return new MarkdownToPdfConverterService();
     }
@@ -26,6 +30,7 @@ public class MarkdownToPdfConverterService {
     /**
      * Assembles the markdown strings into a PDF file.
      *
+     * @param projectPath     the project directory path
      * @param buildDirPath    the build directory path
      * @param markdownStrings the markdown strings to be converted
      */

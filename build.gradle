@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'io.github.takiviko'
-version '1.0.0'
+version '1.1.0'
 
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
@@ -119,6 +119,7 @@ publishing {
         }
     }
     repositories {
+        mavenLocal()
         maven {
             url = project.findProperty("ossrhUrl")
             credentials {

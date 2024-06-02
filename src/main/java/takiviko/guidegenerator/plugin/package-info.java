@@ -1,3 +1,6 @@
+/**
+ * Plugin classes for the Guide Generator project.
+ */
 @Documentation(
     documentation = """
         # Guide Generator plugin

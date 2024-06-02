@@ -1,3 +1,6 @@
+/**
+ * Annotations for the Guide Generator plugin.
+ */
 @Documentation(
     order = 1,
     documentation = """

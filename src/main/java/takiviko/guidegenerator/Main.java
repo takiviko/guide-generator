@@ -5,6 +5,10 @@ import takiviko.guidegenerator.plugin.converter.MarkdownToPdfConverterService;
 
 import java.util.List;
 
+/**
+ * Main class for the application.
+ * Used for debugging and testing purposes.
+ */
 public class Main {
 
     /**
