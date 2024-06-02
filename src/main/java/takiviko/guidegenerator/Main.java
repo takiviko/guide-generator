@@ -1,8 +1,14 @@
 package takiviko.guidegenerator;
 
-import takiviko.guidegenerator.service.GuideGeneratorService;
-import takiviko.guidegenerator.service.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.GuideGeneratorService;
+import takiviko.guidegenerator.plugin.converter.MarkdownToPdfConverterService;
 
+import java.util.List;
+
+/**
+ * Main class for the application.
+ * Used for debugging and testing purposes.
+ */
 public class Main {
 
     /**
@@ -12,10 +18,12 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        var markdownStrings = GuideGeneratorService.newService().getMarkdownStrings(
-            "takiviko",
-            ClassLoader.getSystemClassLoader()
-        );
-        MarkdownToPdfConverterService.newService().assemble(System.getProperty("user.dir") + "/build", markdownStrings);
+        List<String> markdownStrings =
+            new GuideGeneratorService().getMarkdownStrings("takiviko", ClassLoader.getSystemClassLoader());
+
+        String projectPath = System.getProperty("user.dir").replace("\\", "/");
+        String buildPath = projectPath + "/build";
+
+        MarkdownToPdfConverterService.newService().assemble(projectPath, buildPath, markdownStrings);
     }
 }

@@ -12,9 +12,17 @@ import java.util.List;
 @Slf4j
 public class MarkdownToPdfConverterService {
 
-    private final CustomHtmlRenderer htmlRenderer = new CustomHtmlRenderer();
-    private final CustomPdfExporter pdfExporter = new CustomPdfExporter();
+    private static final String CSS_FILE_NAME = "style.css";
+    private static final String RESOURCES_PATH = "/src/main/resources/guide-generator";
+    private static final String DEFAULT_STYLE_PATH = RESOURCES_PATH + "/" + CSS_FILE_NAME;
 
+    private final CustomHtmlRenderer customHtmlRenderer = new CustomHtmlRenderer();
+    private final CustomPdfExporter customPdfExporter = new CustomPdfExporter();
+
+    /**
+     * Creates a new markdown to PDF converter service.
+     * @return a new markdown to PDF converter service instance
+     */
     public static MarkdownToPdfConverterService newService() {
         return new MarkdownToPdfConverterService();
     }
@@ -22,19 +30,17 @@ public class MarkdownToPdfConverterService {
     /**
      * Assembles the markdown strings into a PDF file.
      *
-     * @param buildPath       the path to the build directory
+     * @param projectPath     the project directory path
+     * @param buildDirPath    the build directory path
      * @param markdownStrings the markdown strings to be converted
      */
-    public void assemble(
-        String buildPath,
-        List<String> markdownStrings
-    ) {
+    public void assemble(String projectPath, String buildDirPath, List<String> markdownStrings) {
         String markdownString = String.join("\n", markdownStrings);
 
         log.info("Started converting markdown string");
 
-        String htmlString = htmlRenderer.render(markdownString);
-        pdfExporter.export(htmlString, buildPath);
+        String htmlString = customHtmlRenderer.render(markdownString, projectPath + DEFAULT_STYLE_PATH);
+        customPdfExporter.export(htmlString, buildDirPath);
 
         log.info("Finished converting markdown string");
     }

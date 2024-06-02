@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'io.github.takiviko'
-version '1.0.0'
+version '1.1.0'
 
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
@@ -30,6 +30,7 @@ ext {
     reflectionsVersion = '0.10.2'
     flexMarkVersion = '0.64.0'
     jUnitVersion = '5.9.0'
+    commonsLangVersion = '3.14.0'
 }
 
 dependencies {
@@ -37,8 +38,9 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "com.vladsch.flexmark:flexmark-pdf-converter:${flexMarkVersion}"
-    implementation 'io.github.takiviko.guide-generator:guide-generator:1.0.0'
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
+    implementation 'io.github.takiviko.guide-generator:guide-generator:1.0.0'
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
@@ -117,6 +119,7 @@ publishing {
         }
     }
     repositories {
+        mavenLocal()
         maven {
             url = project.findProperty("ossrhUrl")
             credentials {

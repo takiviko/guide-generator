@@ -14,6 +14,7 @@ public @interface Documentation {
 
         /**
          * Documentation written in Markdown format.
+         * @return the documentation as a string
          */
         String documentation();
 
@@ -23,6 +24,8 @@ public @interface Documentation {
          * It should only be used if the intent of the order is to place items
          * in the very beginning or end of the document as the ordering may be
          * difficult to maintain when adding/removing items.
+         *
+         * @return the order of the documentation in the final document
          */
         int order() default 0;
 
