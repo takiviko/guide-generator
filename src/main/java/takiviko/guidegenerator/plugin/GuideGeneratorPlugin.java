@@ -40,6 +40,14 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
 
         project.task("generateGuide")
             .dependsOn(project.getTasks().getByName("compileJava"))
+            .doFirst(task -> log.info("""
+                
+                \\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\
+                Welcome to the Guide Generator!
+                
+                Generating guide from your codebase.
+                Please wait...
+                """))
             .doLast(task -> generateGuide(project, guideGeneratorPluginExtension));
     }
 
@@ -56,6 +64,7 @@ public class GuideGeneratorPlugin implements Plugin<Project> {
         String buildDirPath = project.getBuildDir().getPath().replace("\\", "/");
         List<String> markdownStrings = guideGeneratorService.getMarkdownStrings(extension.getBasePackage(), classLoader);
 
+        log.debug("Using {} as the base package", extension.getBasePackage());
         markdownToPdfConverterService.assemble(projectPath, buildDirPath, markdownStrings);
     }
 

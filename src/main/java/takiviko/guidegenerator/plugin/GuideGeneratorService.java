@@ -1,5 +1,6 @@
 package takiviko.guidegenerator.plugin;
 
+import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
@@ -16,6 +17,7 @@ import java.util.Objects;
 /**
  * Service for indexing and extracting documentation from a target project.
  */
+@Slf4j
 public class GuideGeneratorService {
 
     /**
@@ -46,11 +48,21 @@ public class GuideGeneratorService {
             .findFirst()
             .orElseThrow();
 
-        return classes.stream()
+        List<? extends Annotation> annotations = classes.stream()
             .filter((aClass) -> aClass.getPackageName().startsWith(basePackage))
             .sorted(Comparator.comparing(Class::getPackageName))
             .map((aClass) -> aClass.getAnnotation(internalAnnotationType.annotationType()))
             .filter(Objects::nonNull)
+            .toList();
+
+        if (annotations.isEmpty()) {
+            log.warn("""
+                No annotations found in the target project!
+                Please add @Documentation annotations to your package-info files to generate documentation.
+                """);
+        }
+
+        return annotations.stream()
             .map((annotation) -> this.getDocumentation(documentationClass, annotation))
             .sorted(Comparator.comparingInt(DocumentationEntity::getOrder))
             .map(DocumentationEntity::getDocumentation)

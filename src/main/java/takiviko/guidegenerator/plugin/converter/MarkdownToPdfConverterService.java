@@ -12,8 +12,8 @@ import java.util.List;
 @Slf4j
 public class MarkdownToPdfConverterService {
 
-    private static final String CSS_FILE_NAME = "style.css";
-    private static final String RESOURCES_PATH = "/src/main/resources/guide-generator";
+    private static final String CSS_FILE_NAME = "guide-generator-style.css";
+    private static final String RESOURCES_PATH = "/src/main/resources/";
     private static final String DEFAULT_STYLE_PATH = RESOURCES_PATH + "/" + CSS_FILE_NAME;
 
     private final CustomHtmlRenderer customHtmlRenderer = new CustomHtmlRenderer();
@@ -36,12 +36,7 @@ public class MarkdownToPdfConverterService {
      */
     public void assemble(String projectPath, String buildDirPath, List<String> markdownStrings) {
         String markdownString = String.join("\n", markdownStrings);
-
-        log.info("Started converting markdown string");
-
         String htmlString = customHtmlRenderer.render(markdownString, projectPath + DEFAULT_STYLE_PATH);
         customPdfExporter.export(htmlString, buildDirPath);
-
-        log.info("Finished converting markdown string");
     }
 }
