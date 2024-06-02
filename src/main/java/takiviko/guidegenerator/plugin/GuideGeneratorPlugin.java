@@ -1,61 +1,86 @@
 package takiviko.guidegenerator.plugin;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.internal.classloader.VisitableURLClassLoader;
-import takiviko.guidegenerator.service.GuideGeneratorService;
-import takiviko.guidegenerator.service.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.converter.MarkdownToPdfConverterService;
+import takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Implementation class for the Guide Generator plugin.
+ */
 @Slf4j
+@SuppressWarnings("unused")
 public class GuideGeneratorPlugin implements Plugin<Project> {
 
-    private final GuideGeneratorService guideGeneratorService = GuideGeneratorService.newService();
+    private final GuideGeneratorService guideGeneratorService = new GuideGeneratorService();
     private final MarkdownToPdfConverterService markdownToPdfConverterService = MarkdownToPdfConverterService.newService();
 
+    /**
+     * Entry point of the Guide Generator plugin.
+     *
+     * @param project the target project
+     */
     @Override
     public void apply(Project project) {
 
-        GuideGeneratorPluginExtension guideGeneratorPluginExtension = project.getExtensions()
-            .create("guideGenerator", GuideGeneratorPluginExtension.class);
+        takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension guideGeneratorPluginExtension = project.getExtensions()
+            .create("guideGenerator", takiviko.guidegenerator.plugin.extension.GuideGeneratorPluginExtension.class);
 
         project.task("generateGuide")
             .dependsOn(project.getTasks().getByName("compileJava"))
-            .doLast(task -> generateGuide(project, guideGeneratorPluginExtension.getBasePackage()));
+            .doFirst(task -> log.info("""
+                
+                \\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\
+                Welcome to the Guide Generator!
+                
+                Generating guide from your codebase.
+                Please wait...
+                """))
+            .doLast(task -> generateGuide(project, guideGeneratorPluginExtension));
     }
 
-    private void generateGuide(Project project, String basePackage) {
+    private void generateGuide(Project project, GuideGeneratorPluginExtension extension) {
         URL[] urls = getProjectFileUrls(project);
 
         ClassLoader classLoader = new URLClassLoader(
-            "myUrlClassLoader",
+            "guideGeneratorClassLoader",
             urls,
             VisitableURLClassLoader.getSystemClassLoader()
         );
 
-         var markdownStrings = guideGeneratorService.getMarkdownStrings(basePackage, classLoader);
-         markdownToPdfConverterService.assemble(project.getBuildDir().getPath(), markdownStrings);
+        String projectPath = project.getProjectDir().getPath().replace("\\", "/");
+        String buildDirPath = project.getBuildDir().getPath().replace("\\", "/");
+        List<String> markdownStrings = guideGeneratorService.getMarkdownStrings(extension.getBasePackage(), classLoader);
+
+        log.debug("Using {} as the base package", extension.getBasePackage());
+        markdownToPdfConverterService.assemble(projectPath, buildDirPath, markdownStrings);
     }
 
     private URL[] getProjectFileUrls(Project project) {
         SourceSetContainer sourceSetContainer =
             project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 
+        // Target project's files
         Set<File> sourceFiles = sourceSetContainer
             .getByName("main")
             .getOutput()
             .getClassesDirs()
             .getFiles();
 
+        // This project's files
+        // Needed for using @Documentation type
         Set<File> runtimeFiles = project.getConfigurations()
             .getByName("runtimeClasspath")
             .getFiles();
